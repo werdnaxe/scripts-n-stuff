@@ -30,7 +30,10 @@ int main(int argc, char** argv) {
   }
 
   // Check if command already stored in commands.txt
-  FILE* infile = fopen("commands.txt", "a+");   // open for reading and appending
+  const char* home = getenv("HOME");
+  char filepath[MAXLINE];
+  snprintf(filepath, sizeof(filepath), "%s/documentation/commands.txt", home);
+  FILE* infile = fopen(filepath, "a+");   // open for reading and appending
   char line[MAXLINE];
   while (fgets(line, sizeof(line), infile) != NULL) {
     char command[100];
@@ -49,6 +52,7 @@ int main(int argc, char** argv) {
 
   // Prompt user for explanation of command and add to file
   printf("Why did you use this command?\n");
+  memset(line, 0, sizeof(line));
   fgets(line, sizeof(line), stdin);
   size_t len = strlen(line);
   if (len > 0 && line[len - 1] == '\n') {
