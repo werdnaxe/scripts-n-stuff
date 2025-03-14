@@ -30,6 +30,8 @@ int main(int argc, char** argv) {
   }
 
   // Check if command already stored in commands.txt
+  // FIX - don't add incorrect commands
+  int flag = 0;
   const char* home = getenv("HOME");
   char filepath[MAXLINE];
   snprintf(filepath, sizeof(filepath), "%s/documentation/commands.txt", home);
@@ -38,17 +40,30 @@ int main(int argc, char** argv) {
   while (fgets(line, sizeof(line), infile) != NULL) {
     char command[100];
     sscanf(line, "%s", command);
-    if (!strcmp(argv[1], command)) {   // command exists
-      printf("Command already exists. Exiting program...\n");
-      fclose(infile);
-      exit(0);
+    if (strcmp(argv[1], "sudo")) {   // check for 'sudo'
+      if (!strcmp(argv[1], command)) {   // command exists
+	  printf("Command already exists. Exiting program...\n");
+	  fclose(infile);
+	  exit(0);
+	}
+    } else {
+      flag = 1;
+      if (!strcmp(argv[2], command)) {   // command exists
+	printf("Command already exists. Exiting program...\n");
+	fclose(infile);
+	exit(0);
+      }
     }
   }
     
   printf("\n");
 
   // Add command to file
-  fprintf(infile, "%s - ", argv[1]);
+  if (!flag) {
+    fprintf(infile, "%s - ", argv[1]);
+  } else {
+    fprintf(infile, "%s - ", argv[2]);
+  }
 
   // Prompt user for explanation of command and add to file
   printf("Why did you use this command?\n");
@@ -69,7 +84,7 @@ int main(int argc, char** argv) {
       fprintf(infile, "%s ", argv[i]);
     }
   }
-  fprintf(infile, ")");
+  fprintf(infile, ")\n");
      
   fclose(infile);
   
